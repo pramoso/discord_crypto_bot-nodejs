@@ -1,9 +1,11 @@
 require('dotenv').config() // Load .env file
 const axios = require('axios')
 const Discord = require('discord.js')
+const { ethers } = require("ethers");
 const client1 = new Discord.Client()
 const client2 = new Discord.Client()
 const client3 = new Discord.Client()
+const client4 = new Discord.Client()
 
 function getNTFWorld() {
 
@@ -96,6 +98,35 @@ function getGas() {
 	}).catch(err => console.log('Error at api data:', err))
 }
 
+function getCryptoshackPool() {
+
+	// API for price data.
+	axios.get(`https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=0xD5d86FC8d5C0Ea1aC1Ac5Dfab6E529c9967a45E9&address=0x772b326d89fd0c74e7d42e402d2e4bf58d432440&tag=latest&apikey=ZSJ5QYP9EMWA89RG1F9PBPKUCR9UYV4YVR`).then(res => {
+		// If we got a valid response
+		//console.log(res.data)
+		if(res.data && res.data.result) {
+			//console.log(tokens);
+			let amount = parseFloat(ethers.utils.formatEther(res.data.result)) || 0; // Default to zero
+			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
+			let symbol = 'WRLD' 
+
+			client4.user.setPresence({
+				game: {
+					// Example: "Watching -5,52% | BTC"
+					name: `POOL WRLD`,
+					type: 3 // Use activity type 3 which is "Watching"
+				}
+			})
+
+			client4.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
+			console.log('Updated price to', amount)
+		}
+		else
+			console.log('Could not load player count data for', process.env.BLOCK_ID)
+
+	}).catch(err => console.log('Error at api data:', err))
+}
+
 // Runs when client connects to Discord.
 client1.on('ready', () => {
 	console.log('Logged in as', client1.user.tag)
@@ -123,9 +154,18 @@ client3.on('ready', () => {
 	setInterval(getGas, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
+// Runs when client connects to Discord.
+client4.on('ready', () => {
+	console.log('Logged in as', client4.user.tag)
+
+	getCryptoshackPool() // Ping server once on startup
+	// Ping the server and set the new status message every x minutes. (Minimum of 1 minute)
+	setInterval(getCryptoshackPool, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
+})
 
 
 // Login to Discord
 client1.login(process.env.DISCORD_TOKEN_1)
 client2.login(process.env.DISCORD_TOKEN_2)
 client3.login(process.env.DISCORD_TOKEN_3)
+client4.login(process.env.DISCORD_TOKEN_4)

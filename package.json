@@ -1,12 +1,14 @@
 {
 	"author": "PROC",
 	"license": "MIT",
+	"main": "index.js",
 	"scripts": {
 		"start": "node index.js"
 	},
 	"dependencies": {
 		"axios": "^0.17.1",
 		"discord.js": "^11.3.0",
-		"dotenv": "^5.0.0"
+		"dotenv": "^5.0.0",
+		"ethers": "^5.6.5"
 	}
 }
