@@ -200,12 +200,13 @@ function getCryptoshackWorldPool() {
 
 			// Send a basic message
 			console.log(age);
-			if (age.indexOf("minut") !=-1 && lastAge != age) {
+			let secondsElapsed = getSecondsDiff(parseInt(lastTx.timeStamp * 1000));
+			if (secondsElapsed >= 60 && lastAge != age) {
 				lastAge = age;
 				paying = 0;
 				client4.channels.cache.get('971260628868145222').send(`Último pago hace ${age}. Parece no están pagando.`);
 			}
-			if (age.indexOf("seg") !=-1 && paying == 0) {
+			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
 				client4.channels.cache.get('971260628868145222').send(`Están volviendo a pagar. Último pago hace ${age}`);
 			}
