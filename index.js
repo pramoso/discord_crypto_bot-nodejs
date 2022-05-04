@@ -171,7 +171,7 @@ function getCryptoshackWorldPool() {
 				}
 			}) */
 
-			client4.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
+			client4.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
 			console.log('Updated price to getCryptoshackWorldPool', amount)
 		}
 		else
@@ -194,7 +194,7 @@ function getCryptoshackWorldPool() {
 			client4.user.setPresence({
 				game: {
 					// Example: "Watching -5,52% | BTC"
-					name: ` ${age} | POOL WRLD`,
+					name: ` ${age} | WRLD`,
 					type: 3 // Use activity type 3 which is "Watching"
 				}
 			}) 
@@ -227,7 +227,7 @@ function getCryptoshackMaticPool() {
 				}
 			})
 
-			client5.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
+			client5.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}  ${symbol}`)
 			console.log('Updated price to getCryptoshackMaticPool', amount)
 		}
 		else
