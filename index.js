@@ -206,11 +206,11 @@ function getCryptoshackWorldPool() {
 			if (secondsElapsed >= 300 && lastAge != age && paying == 1) {
 				lastAge = age;
 				paying = 0;
-				client4.channels.cache.get('971411187537424394').send(`<@971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
+				client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
 			}
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
-				client4.channels.cache.get('971411187537424394').send(`<@971415355895468074> Están volviendo a pagar. Último pago hace ${age}`);
+				client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Están volviendo a pagar. Último pago hace ${age}`);
 			}
 			
 			//client4.user.setActivity(` ${age} | XXX`, {type: "Last pay"});
