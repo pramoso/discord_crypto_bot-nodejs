@@ -10,6 +10,8 @@ const client5 = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 let lastAge = '';
 let paying = 1;
+let emptyWrld = 0;
+let emptyMatic = 0;
 
 const rtf = new Intl.RelativeTimeFormat({
 	localeMatcher: 'best fit', // otros valores: 'lookup'
@@ -201,14 +203,14 @@ function getCryptoshackWorldPool() {
 			// Send a basic message
 			console.log(age);
 			let secondsElapsed = getSecondsDiff(parseInt(lastTx.timeStamp * 1000));
-			if (secondsElapsed >= 300 && lastAge != age) {
+			if (secondsElapsed >= 300 && lastAge != age && paying == 1) {
 				lastAge = age;
 				paying = 0;
-				client4.channels.cache.get('971411187537424394').send(`Último pago hace ${age}. Parece no están pagando.`);
+				client4.channels.cache.get('971411187537424394').send(`<@971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
 			}
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
-				client4.channels.cache.get('971411187537424394').send(`<@202234755926851584> Están volviendo a pagar. Último pago hace ${age}`);
+				client4.channels.cache.get('971411187537424394').send(`<@971415355895468074> Están volviendo a pagar. Último pago hace ${age}`);
 			}
 			
 			//client4.user.setActivity(` ${age} | XXX`, {type: "Last pay"});
