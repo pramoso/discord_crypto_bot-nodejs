@@ -203,7 +203,7 @@ function getCryptoshackWorldPool() {
 			// Send a basic message
 			console.log(age);
 			let secondsElapsed = getSecondsDiff(parseInt(lastTx.timeStamp * 1000));
-			if (secondsElapsed >= 300 && lastAge != age && paying == 1) {
+			if (secondsElapsed >= 900 && lastAge != age && paying == 1) {
 				lastAge = age;
 				paying = 0;
 				client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
