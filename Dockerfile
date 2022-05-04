@@ -1,6 +1,6 @@
 # Docker Image which is used as foundation to create
 # a custom Docker Image with this Dockerfile
-FROM node:16.1
+FROM node:16.15.0
 
 # Create app directory
 WORKDIR /usr/src/app

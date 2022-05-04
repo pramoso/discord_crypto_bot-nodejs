@@ -1,12 +1,15 @@
 require('dotenv').config() // Load .env file
 const axios = require('axios')
-const Discord = require('discord.js')
+const { Client, Intents } = require('discord.js')
 const { ethers } = require("ethers");
-const client1 = new Discord.Client()
-const client2 = new Discord.Client()
-const client3 = new Discord.Client()
-const client4 = new Discord.Client()
-const client5 = new Discord.Client()
+const client1 = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client2 = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client3 = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client4 = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client5 = new Client({ intents: [Intents.FLAGS.GUILDS] });
+
+let lastAge = '';
+let paying = 1;
 
 const rtf = new Intl.RelativeTimeFormat({
 	localeMatcher: 'best fit', // otros valores: 'lookup'
@@ -78,7 +81,7 @@ function getNTFWorld() {
 				}
 			})
 
-			client2.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
+			client2.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
 
 			console.log('Updated price to getNTFWorld', currentPrice)
 		}
@@ -110,7 +113,7 @@ function getBlock() {
 				}
 			})
 
-			client1.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
+			client1.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
 
 			console.log('Updated price to getBlock', currentPrice)
 		}
@@ -141,7 +144,7 @@ function getGas() {
 				}
 			})
 
-			client3.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(gasPriceGwei).split(".")[0].replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
+			client3.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(gasPriceGwei).split(".")[0].replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
 
 			console.log('Updated price to getGas', gasPriceGwei)
 		}
@@ -171,7 +174,7 @@ function getCryptoshackWorldPool() {
 				}
 			}) */
 
-			client4.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
+			client4.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
 			console.log('Updated price to getCryptoshackWorldPool', amount)
 		}
 		else
@@ -197,6 +200,18 @@ function getCryptoshackWorldPool() {
 					type: 3 // Use activity type 3 which is "Watching"
 				}
 			}) 
+			// Send a basic message
+			console.log(age);
+			if (age.indexOf("minut") !=-1 && lastAge != age) {
+				lastAge = age;
+				paying = 0;
+				client4.channels.cache.get('971260628868145222').send(`<@202234755926851584> <@517108792165531651> Último pago hace ${age}. Parece no están pagando.`);
+			}
+			if (age.indexOf("seg") !=-1 && paying == 0) {
+				paying = 1;
+				client4.channels.cache.get('971260628868145222').send(`<@202234755926851584> <@517108792165531651> Están volviendo a pagar. Último pago hace ${age}`);
+			}
+			
 			//client4.user.setActivity(` ${age} | XXX`, {type: "Last pay"});
 			console.log('Updated lastTx of getCryptoshackWorldPool', age)
 		}
@@ -226,7 +241,7 @@ function getCryptoshackMaticPool() {
 				}
 			})
 
-			client5.guilds.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}  ${symbol}`)
+			client5.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}  ${symbol}`)
 			console.log('Updated price to getCryptoshackMaticPool', amount)
 		}
 		else
