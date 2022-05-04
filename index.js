@@ -189,12 +189,11 @@ function getCryptoshackWorldPool() {
 			let age = getTimeAgo(parseInt(lastTx.timeStamp * 1000));
 			
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
-			let symbol = 'WRLD' 
 
 			client4.user.setPresence({
 				game: {
 					// Example: "Watching -5,52% | BTC"
-					name: ` ${age} | WRLD`,
+					name: ` ${age} | POOL`,
 					type: 3 // Use activity type 3 which is "Watching"
 				}
 			}) 
@@ -222,7 +221,7 @@ function getCryptoshackMaticPool() {
 			client5.user.setPresence({
 				game: {
 					// Example: "Watching -5,52% | BTC"
-					name: `POOL MATIC`,
+					name: `POOL`,
 					type: 3 // Use activity type 3 which is "Watching"
 				}
 			})
