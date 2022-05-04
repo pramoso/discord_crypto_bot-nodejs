@@ -73,13 +73,10 @@ function getNTFWorld() {
 			let currentPrice = res.data[0].current_price || 0 // Default to zero
 			let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 			let symbol = res.data[0].symbol || '?' 
-			client2.user.setPresence({
-				game: {
-					// Example: "Watching -5,52% | BTC"
-					name: `${priceChange.toFixed(2)}% | ${symbol.toUpperCase()}`,
-					type: 3 // Use activity type 3 which is "Watching"
-				}
-			})
+			client2.user.setActivity(
+				`${priceChange.toFixed(2)}% | ${symbol.toUpperCase()}`,
+				{ type: "WATCHING" }
+			)
 
 			client2.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
 
@@ -105,13 +102,11 @@ function getBlock() {
 			let currentPrice = token.price || 0 // Default to zero
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 			let symbol = token.symbol || '?' 
-			client1.user.setPresence({
-				game: {
-					// Example: "Watching -5,52% | BTC"
-					name: `${symbol.toUpperCase()}`,
-					type: 3 // Use activity type 3 which is "Watching"
-				}
-			})
+
+			client1.user.setActivity(
+				`${symbol.toUpperCase()}`,
+				{ type: "WATCHING" }
+			)
 
 			client1.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
 
@@ -143,6 +138,11 @@ function getGas() {
 					type: 3 // Use activity type 3 which is "Watching"
 				}
 			})
+
+			client3.user.setActivity(
+				`GAS`,
+				{ type: "WATCHING" }
+			)
 
 			client3.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(gasPriceGwei).split(".")[0].replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
 
@@ -193,13 +193,11 @@ function getCryptoshackWorldPool() {
 			
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 
-			client4.user.setPresence({
-				game: {
-					// Example: "Watching -5,52% | BTC"
-					name: ` ${age} | POOL`,
-					type: 3 // Use activity type 3 which is "Watching"
-				}
-			}) 
+			client4.user.setActivity(
+				`${age} | POOL`,
+				{ type: "WATCHING" }
+			)
+
 			// Send a basic message
 			console.log(age);
 			if (age.indexOf("minut") !=-1 && lastAge != age) {
@@ -233,13 +231,10 @@ function getCryptoshackMaticPool() {
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 			let symbol = 'MATIC' 
 
-			client5.user.setPresence({
-				game: {
-					// Example: "Watching -5,52% | BTC"
-					name: `POOL`,
-					type: 3 // Use activity type 3 which is "Watching"
-				}
-			})
+			client5.user.setActivity(
+				`POOL`,
+				{ type: "WATCHING" }
+			)
 
 			client5.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}  ${symbol}`)
 			console.log('Updated price to getCryptoshackMaticPool', amount)
