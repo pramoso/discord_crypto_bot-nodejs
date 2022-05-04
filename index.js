@@ -208,7 +208,7 @@ function getCryptoshackWorldPool() {
 			}
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
-				client4.channels.cache.get('971260628868145222').send(`Están volviendo a pagar. Último pago hace ${age}`);
+				client4.channels.cache.get('971260628868145222').send(`<@202234755926851584> Están volviendo a pagar. Último pago hace ${age}`);
 			}
 			
 			//client4.user.setActivity(` ${age} | XXX`, {type: "Last pay"});
