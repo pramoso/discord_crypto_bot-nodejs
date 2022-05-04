@@ -194,7 +194,7 @@ function getCryptoshackWorldPool() {
 				game: {
 					// Example: "Watching -5,52% | BTC"
 					name: ` ${age} | POOL`,
-					type: 3 // Use activity type 3 which is "Watching"
+					type: 0 // Use activity type 3 which is "Watching"
 				}
 			}) 
 			//client4.user.setActivity(` ${age} | XXX`, {type: "Last pay"});
