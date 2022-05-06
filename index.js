@@ -1,7 +1,9 @@
 require('dotenv').config() // Load .env file
 const axios = require('axios')
-const { Client, Intents } = require('discord.js')
+const cheerio = require('cheerio');
+const { Client, Intents, MessageEmbed } = require('discord.js')
 const { ethers } = require("ethers");
+
 const client1 = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const client2 = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const client3 = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -12,6 +14,37 @@ let lastAge = '';
 let paying = 1;
 let emptyWrld = 0;
 let emptyMatic = 0;
+
+const wallets = {
+	"proc#3096": "0xe880E082A0DD7F6423A4834E55c08527361f733c",
+	"(Carlos)#4157": "0xe880E082A0DD7F6423A4834E55c08527361f733c",
+	"KmikZE#3498": "0xf7d541E8436e638f94D828a1ea7B1521598b8BBA",
+	"carro#7692": "0x98Af0335E44A9857Af5bd2eEFbe32c840FeC6fce",
+	"Yasan#7539": "0x18133D9de05730Dd628Ca2A4dEd611d7db9528e3",
+	"Oganba#0103": "0x13D24D484b643E2562557F0B6d3c04718c05ec58",
+	"Orejas#3052": "0xCbD6acb60BC2b480f155619116f630b3a71BfA35",
+	"Acolastin#8913": "0x1AdbA122cC2D161B34B7643E0B7808E2e2De80Fe",
+	"espada12#3809": "0xDE36E7979f9d0964a44E6cb2f75454414A87165a",
+	"TeamBuraka#0784": "0x4f1B6705122486Dfe5b9e7f20a1C3841D4cfa5Af",
+	"Morocha#0277": "0x7c1795E8ED16Dd5220fE8Ec00B5B6F2E6a9F12BA",
+	"inu#7035": "0x14d7233Bf329e06f01197f3B86014A6cDD79D0C7",
+	"Andreina Gimenez#4284": "0xBa756f821eD0C87763E3Bb2A6FB8dADd51Ea6E99",
+	"luisangel36#4123": "0xF65ED33EE022bD93EC0bC943A04f2101e4B994Ed",
+	"Jota#7947": "0x739644eF3FCD33a1afD02B9d0Be623B0F1ED5E0F",
+	"victorfinol#7842": "0x2339b35Ed2A0ba8689ad6D1b5f91774fED5db549",
+	"Zambra#7522": "0x35137b8f5b42297aFBa6572C2Ff8BD3d7aadA411",
+	"Lisbug#1065": "0x99d5620b0D4693149FDd697F63ec0e7Ad8Df5387",
+	"EpicGamesxD#2202": "0x05b2e494f6b6D325f321a5c88A8E551687759159",
+	"caraota_frita#4937": "0x7Ea43871E0A75968F69362E999C8B8EB6d3B3fF5",
+	"stevendres#3311": "0x2BD0Fa83ed3d0005b87Af9aFe14a3455cE6E6522",
+	"elenmarmol#1553": "0xeCEf7EabAe4EF6808f4615B9c1EE22FDE8D14c23",
+	"Ara#3938": "0x5E8ec13d880031302B92Cd0E1b81a2125CEc7FA7",
+	"MasterLokyOp#5503": "0x5e23FcFb0Cc97585b92608f856CB4F95e207A1a8",
+	"KaptoChan#3268": "0xe79913E1c042CE461A6791e97841633a3F40BAaF",
+	"SandraCo#8646": "0xb3B509A5C030c172ab20B6e18ECaff581b93A7d9",
+	"Zukarito#6450": "0xA89A5f140Cf860B7808ff940F4Ce5737E1f508b0",
+	"Miguel Morales#2314": "0x953945E4ec7aB8B73DD6449d866518a23398c720"
+}
 
 const rtf = new Intl.RelativeTimeFormat({
 	localeMatcher: 'best fit', // otros valores: 'lookup'
@@ -118,6 +151,7 @@ function getBlock() {
 			console.log('Could not load player count data for', process.env.BLOCK_ID)
 
 	}).catch(err => console.log('Error at api data:', err))
+
 }
 
 function getGas() {
@@ -201,12 +235,12 @@ function getCryptoshackWorldPool() {
 			)
 
 			// Send a basic message
-			console.log(age);
+			//console.log(age);
 			let secondsElapsed = getSecondsDiff(parseInt(lastTx.timeStamp * 1000));
 			if (secondsElapsed >= 1800 && lastAge != age && paying == 1) {
 				lastAge = age;
 				paying = 0;
-				client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
+				//client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
 			}
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
@@ -247,6 +281,11 @@ function getCryptoshackMaticPool() {
 
 	}).catch(err => console.log('Error at api data:', err))
 }
+
+async function getUserTime(wallet) {
+	
+}
+
 
 // Runs when client connects to Discord.
 client1.on('ready', () => {
@@ -293,7 +332,82 @@ client5.on('ready', () => {
 	setInterval(getCryptoshackMaticPool, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
+client1.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) return;
 
+	const { commandName } = interaction;
+
+	if (commandName === 'ping') {
+		await interaction.reply('Pong!');
+	} else if (commandName === 'server') {
+		await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
+	} else if (commandName === 'user') {
+		await interaction.reply(`Your tag: ${interaction.user.tag}\nYour id: ${interaction.user.id}`);
+	} else if (commandName === 'time') {
+		const userWallet = wallets[interaction.user.tag];
+		await interaction.deferReply();
+		const res = await axios.get(`https://server-dxhfx4osrq-ue.a.run.app/block/reward/${userWallet}`);
+		var userBlocks = res.data.playReward || 0;
+		/* axios.get(`https://server-dxhfx4osrq-ue.a.run.app/block/reward/${userWallet}`)
+			.then( res => {
+				if(res.data && res.data.playReward) {
+					userBlocks = res.data.playReward || 0 // Default to zero;
+					console.log(res.data);
+					console.log(userBlocks);
+				}
+				else
+					console.log('Could not load player data for', userWallet)
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			}); */
+		axios.get(`https://www.critterztracker.com/${userWallet}`)
+			.then(async response => {
+				const $ = cheerio.load(response.data);
+				const userInfo = $('script:not([src])')[0].children[0].data
+				const time = JSON.parse(userInfo.match(/timePerEpoch":(\[.*?\])/)[1]);
+				const staked = JSON.parse(userInfo.match(/,"staked":(\[.*?\])/)[1]);
+				console.log(staked)
+				console.log('Success:', time);
+				var d = new Date();
+
+				const userReport = new MessageEmbed()
+					.setColor('#0099ff')
+					.setTitle('Registro de tiempos')
+					.setURL(`https://www.critterztracker.com/${userWallet}`)
+					//.setAuthor({ name: 'proc', iconURL: 'https://i.imgur.com/HqdTrxJ.png', url: 'https://discord.js.org' })
+					.setDescription(`<@${interaction.user.id}> estos son tus tiempos registrados en los últimos días`)
+					.setThumbnail('https://i.imgur.com/ZccgsMC.jpeg')
+					.addFields(
+						//{ name: 'Regular field title', value: 'Some value here' },
+						//{ name: '\u200B', value: '\u200B' },
+						{ name: `Hoy`, value: `${time[0]} minutos.`, inline: true },
+						{ name: `Ayer`, value: `${time[1]} minutos.`, inline: true },
+						{ name: `Hace 3 días`, value: `${time[2]} minutos.`, inline: true },
+					)
+					.addFields(
+						//{ name: 'Regular field title', value: 'Some value here' },
+						//{ name: '\u200B', value: '\u200B' },
+						{ name: `Hace 4 días`, value: `${time[3]} minutos.`, inline: true },
+						{ name: `Hace 5 días`, value: `${time[4]} minutos.`, inline: true },
+						{ name: `Hace 6 días`, value: `${time[5]} minutos.`, inline: true },
+					)
+					.addField('Blocks acumulados', `${parseFloat(userBlocks).toFixed(2)} $block`, true)
+					.addField('Critterz asignados', `${staked.length}`, true)
+					//.setImage('https://i.imgur.com/AfFp7pu.png')
+					.setTimestamp()
+					.setFooter({ text: 'Bot para Critterz', iconURL: 'https://i.imgur.com/ZccgsMC.jpeg' });
+
+
+				//client1.channels.cache.get('971975505458909205').send({ embeds: [userReport] });				
+				await interaction.editReply({ embeds: [userReport] })
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		
+		}
+});
 
 // Login to Discord
 client1.login(process.env.DISCORD_TOKEN_1)
