@@ -67,9 +67,9 @@ const eventFilesMaticPool = fs.readdirSync('./events/cs-matic').filter(file => f
 for (const file of eventFilesMaticPool) {
 	const event = require(`./events/cs-matic/${file}`);
 	if (event.once) {
-		clientWrldPool.once(event.name, (...args) => event.execute(...args));
+		clientMaticPool.once(event.name, (...args) => event.execute(...args));
 	} else {
-		clientWrldPool.on(event.name, (...args) => event.execute(...args));
+		clientMaticPool.on(event.name, (...args) => event.execute(...args));
 	}
 }
 
