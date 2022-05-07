@@ -3,48 +3,22 @@ const axios = require('axios')
 const cheerio = require('cheerio');
 const { Client, Intents, MessageEmbed } = require('discord.js')
 const { ethers } = require("ethers");
+const wallets = require('./discord-wallets.json')
 
-const client1 = new Client({ intents: [Intents.FLAGS.GUILDS] });
-const client2 = new Client({ intents: [Intents.FLAGS.GUILDS] });
-const client3 = new Client({ intents: [Intents.FLAGS.GUILDS] });
-const client4 = new Client({ intents: [Intents.FLAGS.GUILDS] });
-const client5 = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const clientBlock = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const clientWrld = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const clientGas = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const clientWrldPool = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const clientMaticPool = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 let lastAge = '';
 let paying = 1;
+let symbolWrld = '';
+let symbolBlock = '';
+let symbolMatic = '';
+let symbolGas = 'gwei';
 let emptyWrld = 0;
 let emptyMatic = 0;
-
-const wallets = {
-	"proc#3096": "0xe880E082A0DD7F6423A4834E55c08527361f733c",
-	"(Carlos)#4157": "0xe880E082A0DD7F6423A4834E55c08527361f733c",
-	"KmikZE#3498": "0xf7d541E8436e638f94D828a1ea7B1521598b8BBA",
-	"carro#7692": "0x98Af0335E44A9857Af5bd2eEFbe32c840FeC6fce",
-	"Yasan#7539": "0x18133D9de05730Dd628Ca2A4dEd611d7db9528e3",
-	"Oganba#0103": "0x13D24D484b643E2562557F0B6d3c04718c05ec58",
-	"Orejas#3052": "0xCbD6acb60BC2b480f155619116f630b3a71BfA35",
-	"Acolastin#8913": "0x1AdbA122cC2D161B34B7643E0B7808E2e2De80Fe",
-	"espada12#3809": "0xDE36E7979f9d0964a44E6cb2f75454414A87165a",
-	"TeamBuraka#0784": "0x4f1B6705122486Dfe5b9e7f20a1C3841D4cfa5Af",
-	"Morocha#0277": "0x7c1795E8ED16Dd5220fE8Ec00B5B6F2E6a9F12BA",
-	"inu#7035": "0x14d7233Bf329e06f01197f3B86014A6cDD79D0C7",
-	"Andreina Gimenez#4284": "0xBa756f821eD0C87763E3Bb2A6FB8dADd51Ea6E99",
-	"luisangel36#4123": "0xF65ED33EE022bD93EC0bC943A04f2101e4B994Ed",
-	"Jota#7947": "0x739644eF3FCD33a1afD02B9d0Be623B0F1ED5E0F",
-	"victorfinol#7842": "0x2339b35Ed2A0ba8689ad6D1b5f91774fED5db549",
-	"Zambra#7522": "0x35137b8f5b42297aFBa6572C2Ff8BD3d7aadA411",
-	"Lisbug#1065": "0x99d5620b0D4693149FDd697F63ec0e7Ad8Df5387",
-	"EpicGamesxD#2202": "0x05b2e494f6b6D325f321a5c88A8E551687759159",
-	"caraota_frita#4937": "0x7Ea43871E0A75968F69362E999C8B8EB6d3B3fF5",
-	"stevendres#3311": "0x2BD0Fa83ed3d0005b87Af9aFe14a3455cE6E6522",
-	"elenmarmol#1553": "0xeCEf7EabAe4EF6808f4615B9c1EE22FDE8D14c23",
-	"Ara#3938": "0x5E8ec13d880031302B92Cd0E1b81a2125CEc7FA7",
-	"MasterLokyOp#5503": "0x5e23FcFb0Cc97585b92608f856CB4F95e207A1a8",
-	"KaptoChan#3268": "0xe79913E1c042CE461A6791e97841633a3F40BAaF",
-	"SandraCo#8646": "0xb3B509A5C030c172ab20B6e18ECaff581b93A7d9",
-	"Zukarito#6450": "0xA89A5f140Cf860B7808ff940F4Ce5737E1f508b0",
-	"Miguel Morales#2314": "0x953945E4ec7aB8B73DD6449d866518a23398c720"
-}
 
 const rtf = new Intl.RelativeTimeFormat({
 	localeMatcher: 'best fit', // otros valores: 'lookup'
@@ -98,241 +72,229 @@ const getTimeAgo = timestamp => {
 	return rtf.format(value, unit)
   }
 
-function getNTFWorld() {
-
-
-	// API for price data.
-	axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${process.env.PREFERRED_CURRENCY}&ids=${process.env.NFTWORLD_ID}`).then(res => {
-		// If we got a valid response
-		if(res.data && res.data[0].current_price && res.data[0].price_change_percentage_24h) {
-			let currentPrice = res.data[0].current_price || 0 // Default to zero
-			let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
-			let symbol = res.data[0].symbol || '?' 
-			client2.user.setActivity(
-				`${priceChange.toFixed(2)}% | ${symbol.toUpperCase()}`,
-				{ type: "WATCHING" }
-			)
-
-			client2.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
-
-			console.log('Updated price to getNTFWorld', currentPrice)
-		}
-		else
-			console.log('Could not load player count data for', process.env.NFTWORLD_ID)
-
-	}).catch(err => console.log('Error at api.coingecko.com data:', err))
-}
-
 function getBlock() {
-
-
 	// API for price data.
 	axios.get(`https://aggregator-api.kyberswap.com/ethereum/route?tokenIn=${process.env.BLOCK_ID}&tokenOut=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&amountIn=100000000000000000000&saveGas=0&gasInclude=0`).then(res => {
 		// If we got a valid response
-		//console.log(res.data)
 		if(res.data && res.data.tokens) {
+			// List of tokens
 			let tokens = res.data.tokens;
+			// Get first token from array which should be $block
 			let token = tokens[Object.keys(tokens)[0]]
-			//console.log(tokens);
-			let currentPrice = token.price || 0 // Default to zero
+			let currentPrice = token.price || 0
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 			let symbol = token.symbol || '?' 
 
-			client1.user.setActivity(
-				`${symbol.toUpperCase()}`,
+			// set currentPrice and priceChange into status
+			clientBlock.user.setActivity(
+				`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`,
 				{ type: "WATCHING" }
 			)
 
-			client1.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`)
+			// set symbol as discord bot name
+			if (symbolBlock != symbol) {
+				symbolBlock = symbol;
+				
+				clientBlock.guilds.cache
+				.find(guild => guild.id === process.env.SERVER_ID)
+				.me.setNickname(symbol.toUpperCase())
+
+				console.log('Update name of getBlock to', symbol)
+			}			
 
 			console.log('Updated price to getBlock', currentPrice)
 		}
 		else
-			console.log('Could not load player count data for', process.env.BLOCK_ID)
+			console.log('Could not load data for', process.env.BLOCK_ID)
 
 	}).catch(err => console.log('Error at api data:', err))
 
 }
 
-function getGas() {
-
+function getWrld() {
 	// API for price data.
-	axios.get(`https://aggregator-api.kyberswap.com/ethereum/route?tokenIn=${process.env.BLOCK_ID}&tokenOut=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&amountIn=100000000000000000000&saveGas=0&gasInclude=0`).then(res => {
+	axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${process.env.PREFERRED_CURRENCY}&ids=${process.env.WRLD_ID}`).then(res => {
 		// If we got a valid response
-		//console.log(res.data)
-		if(res.data && res.data.tokens) {
-			//console.log(tokens);
-			let gasPriceGwei = res.data.gasPriceGwei || 0;
-			let currentPrice = res.data.gasUsd || 0 // Default to zero
-			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
-			let symbol = 'gwei' 
+		if(res.data && res.data[0].current_price && res.data[0].price_change_percentage_24h) {
+			let currentPrice = res.data[0].current_price || 0
+			let priceChange = res.data[0].price_change_percentage_24h || 0
+			let symbol = res.data[0].symbol || '?' 
 
-			client3.user.setPresence({
-				game: {
-					// Example: "Watching -5,52% | BTC"
-					name: `GAS`,
-					type: 3 // Use activity type 3 which is "Watching"
-				}
-			})
-
-			client3.user.setActivity(
-				`GAS`,
+			// set currentPrice and priceChange into status
+			clientWrld.user.setActivity(
+				`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)} | ${priceChange.toFixed(2)}%`,
 				{ type: "WATCHING" }
 			)
 
-			client3.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(gasPriceGwei).split(".")[0].replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
+			// set symbol as discord bot name
+			if (symbolWrld != symbol) {
+				symbolWrld = symbol;
+				
+				clientWrld.guilds.cache
+				.find(guild => guild.id === process.env.SERVER_ID)
+				.me.setNickname(symbol.toUpperCase())
 
-			console.log('Updated price to getGas', gasPriceGwei)
+				console.log('Update name of getWorld to', symbol)
+			}			
+
+			console.log('Updated price to getWrld', currentPrice)
 		}
 		else
-			console.log('Could not load player count data for', process.env.BLOCK_ID)
+			console.log('Could not load data for', process.env.WRLD_ID)
+
+	}).catch(err => console.log('Error at api data:', err))
+}
+
+function getGas() {
+	// API for price data.
+	axios.get(`https://aggregator-api.kyberswap.com/ethereum/route?tokenIn=${process.env.BLOCK_ID}&tokenOut=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&amountIn=100000000000000000000&saveGas=0&gasInclude=0`).then(res => {
+		// If we got a valid response
+		if(res.data && res.data.tokens) {
+			//console.log(tokens);
+			let currentPriceGwei = res.data.gasPriceGwei || 0;
+			let currentPriceUsd = res.data.gasUsd || 0;
+			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
+			let symbol = 'gwei';
+		
+			// set currentPrice and priceChange into status
+			clientGas.user.setActivity(
+				`${(currentPriceGwei).split(".")[0].replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol} | ${process.env.CURRENCY_SYMBOL}${(currentPriceUsd).toLocaleString(undefined, { maximumFractionDigits: 2 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)}`,
+				{ type: "WATCHING" }
+			)
+
+			console.log('Updated price to getGas', currentPriceGwei);
+		}
+		else
+			console.log('Could not load data for', symbol);
 
 	}).catch(err => console.log('Error at api data:', err))
 }
 
 function getCryptoshackWorldPool() {
-
 	// API for price data.
-	axios.get(`https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=0xD5d86FC8d5C0Ea1aC1Ac5Dfab6E529c9967a45E9&address=0x772b326d89fd0c74e7d42e402d2e4bf58d432440&tag=latest&apikey=ZSJ5QYP9EMWA89RG1F9PBPKUCR9UYV4YVR`).then(res => {
+	axios.get(`https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&startblock=0&endblock=99999999&page=1&offset=5&sort=desc&apikey=${process.env.POLYGON_TOKEN}`).then(async res => {
 		// If we got a valid response
-		//console.log(res.data)
 		if(res.data && res.data.result) {
-			//console.log(tokens);
-			let amount = parseFloat(ethers.utils.formatEther(res.data.result)) || 0; // Default to zero
-			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
-			let symbol = 'WRLD' 
+			// Get Wrld Pool Amount
+			let response = await axios.get(`https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&tag=latest&apikey=${process.env.POLYGON_TOKEN}`);
+			let amount = parseFloat(ethers.utils.formatEther(response.data.result)) || 0;
 
-			/* client4.user.setPresence({
-				game: {
-					// Example: "Watching -5,52% | BTC"
-					name: `POOL WRLD`,
-					type: 3 // Use activity type 3 which is "Watching"
-				}
-			}) */
-
-			client4.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`)
-			console.log('Updated price to getCryptoshackWorldPool', amount)
-		}
-		else
-			console.log('Could not load player count data for', process.env.BLOCK_ID)
-
-	}).catch(err => console.log('Error at api data:', err))
-
-	// API for price data.
-	axios.get(`https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=0xD5d86FC8d5C0Ea1aC1Ac5Dfab6E529c9967a45E9&address=0x772b326d89fd0c74e7d42e402d2e4bf58d432440&startblock=0&endblock=99999999&page=1&offset=5&sort=desc&apikey=ZSJ5QYP9EMWA89RG1F9PBPKUCR9UYV4YVR`).then(res => {
-		// If we got a valid response
-		//console.log(res.data)
-		if(res.data && res.data.result) {
-			//console.log(res.data);
-			let lastTx = res.data.result[0]; // Default to zero
+			// Get Timestamp of last tx
+			let lastTx = res.data.result[0];
+			// Calculate age of last tx
 			let age = getTimeAgo(parseInt(lastTx.timeStamp * 1000));
-			
-			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 
-			client4.user.setActivity(
-				`${age} | POOL`,
+			clientWrldPool.user.setActivity(
+				`${age} | ${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbolWrld}`,
 				{ type: "WATCHING" }
 			)
 
-			// Send a basic message
-			//console.log(age);
+			// Calculate how many seconds since last tx
 			let secondsElapsed = getSecondsDiff(parseInt(lastTx.timeStamp * 1000));
+
+			// If it is more than 30 minutes that, send a message that no payments are going out
 			if (secondsElapsed >= 1800 && lastAge != age && paying == 1) {
 				lastAge = age;
 				paying = 0;
-				//client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
+				clientWrldPool.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
 			}
+
+			// If is less than 60 seconds from last payment, send a message that payments are going out
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
-				client4.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Están volviendo a pagar. Último pago hace ${age}`);
+				clientWrldPool.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Están volviendo a pagar. Último pago hace ${age}`);
 			}
-			
-			//client4.user.setActivity(` ${age} | XXX`, {type: "Last pay"});
-			console.log('Updated lastTx of getCryptoshackWorldPool', age)
+
+			console.log('Updated tx of getCryptoshackWorldPool', age)
+			console.log('Updated amount of getCryptoshackWorldPool', amount)
 		}
 		else
-			console.log('Could not load player count data for', process.env.BLOCK_ID)
+			console.log('Could not load data for', process.env.BLOCK_ID)
 
 	}).catch(err => console.log('Error at api data:', err))
 }
 
 function getCryptoshackMaticPool() {
-
 	// API for price data.
-	axios.get(`https://api.polygonscan.com/api?module=account&action=balance&address=0x772b326d89fd0c74e7d42e402d2e4bf58d432440&apikey=ZSJ5QYP9EMWA89RG1F9PBPKUCR9UYV4YVR`).then(res => {
+	axios.get(`https://api.polygonscan.com/api?module=account&action=balance&address=${process.env.CRYPTOSHACK_WALLET}&apikey=${process.env.POLYGON_TOKEN}`).then(res => {
 		// If we got a valid response
-		//console.log(res.data)
 		if(res.data && res.data.result) {
-			//console.log(tokens);
 			let amount = parseFloat(ethers.utils.formatEther(res.data.result)) || 0; // Default to zero
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
 			let symbol = 'MATIC' 
-
-			client5.user.setActivity(
-				`POOL`,
+			
+			// set currentPrice and priceChange into status
+			clientMaticPool.user.setActivity(
+				`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}  ${symbol}`,
 				{ type: "WATCHING" }
 			)
 
-			client5.guilds.cache.find(guild => guild.id === process.env.SERVER_ID).me.setNickname(`${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)}  ${symbol}`)
 			console.log('Updated price to getCryptoshackMaticPool', amount)
 		}
 		else
-			console.log('Could not load player count data for', process.env.BLOCK_ID)
+			console.log('Could not load data for', symbol)
 
 	}).catch(err => console.log('Error at api data:', err))
 }
 
-async function getUserTime(wallet) {
-	
-}
-
-
 // Runs when client connects to Discord.
-client1.on('ready', () => {
-	console.log('Logged in as', client1.user.tag)
+clientBlock.on('ready', () => {
+	console.log('Logged in as', clientBlock.user.tag)
 
-	getBlock() // Ping server once on startup
-	// Ping the server and set the new status message every x minutes. (Minimum of 1 minute)
+	getBlock() // Update status once on startup
+	// Set the new status message every x seconds
 	setInterval(getBlock, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
 // Runs when client connects to Discord.
-client2.on('ready', () => {
-	console.log('Logged in as', client2.user.tag)
+clientWrld.on('ready', () => {
+	console.log('Logged in as', clientWrld.user.tag)
 
-	getNTFWorld() // Ping server once on startup
-	// Ping the server and set the new status message every x minutes. (Minimum of 1 minute)
-	setInterval(getNTFWorld, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
+	getWrld() // Update status once on startup
+	// Set the new status message every x seconds
+	setInterval(getWrld, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
 // Runs when client connects to Discord.
-client3.on('ready', () => {
-	console.log('Logged in as', client3.user.tag)
+clientGas.on('ready', () => {
+	console.log('Logged in as', clientGas.user.tag)
 
-	getGas() // Ping server once on startup
-	// Ping the server and set the new status message every x minutes. (Minimum of 1 minute)
+	clientGas.guilds.cache
+		.find(guild => guild.id === process.env.SERVER_ID)
+		.me.setNickname('Gas Tracker')
+
+	getGas() // Update status once on startup 
+	// Set the new status message every x seconds
 	setInterval(getGas, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
 // Runs when client connects to Discord.
-client4.on('ready', () => {
-	console.log('Logged in as', client4.user.tag)
+clientWrldPool.on('ready', () => {
+	console.log('Logged in as', clientWrldPool.user.tag)
 
-	getCryptoshackWorldPool() // Ping server once on startup
-	// Ping the server and set the new status message every x minutes. (Minimum of 1 minute)
+	clientWrldPool.guilds.cache
+		.find(guild => guild.id === process.env.SERVER_ID)
+		.me.setNickname('CS Payments')
+
+	getCryptoshackWorldPool() // Update status once on startup
+	// Set the new status message every x seconds
 	setInterval(getCryptoshackWorldPool, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
 // Runs when client connects to Discord.
-client5.on('ready', () => {
-	console.log('Logged in as', client5.user.tag)
+clientMaticPool.on('ready', () => {
+	console.log('Logged in as', clientMaticPool.user.tag)
 
-	getCryptoshackMaticPool() // Ping server once on startup
-	// Ping the server and set the new status message every x minutes. (Minimum of 1 minute)
+	clientMaticPool.guilds.cache
+		.find(guild => guild.id === process.env.SERVER_ID)
+		.me.setNickname('CS MATIC')
+
+	getCryptoshackMaticPool() // Update status once on startup
+	// Set the new status message every x seconds
 	setInterval(getCryptoshackMaticPool, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000)
 })
 
-client1.on('interactionCreate', async interaction => {
+clientBlock.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
 	const { commandName } = interaction;
@@ -348,19 +310,6 @@ client1.on('interactionCreate', async interaction => {
 		await interaction.deferReply();
 		const res = await axios.get(`https://server-dxhfx4osrq-ue.a.run.app/block/reward/${userWallet}`);
 		var userBlocks = res.data.playReward || 0;
-		/* axios.get(`https://server-dxhfx4osrq-ue.a.run.app/block/reward/${userWallet}`)
-			.then( res => {
-				if(res.data && res.data.playReward) {
-					userBlocks = res.data.playReward || 0 // Default to zero;
-					console.log(res.data);
-					console.log(userBlocks);
-				}
-				else
-					console.log('Could not load player data for', userWallet)
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-			}); */
 		axios.get(`https://www.critterztracker.com/${userWallet}`)
 			.then(async response => {
 				const $ = cheerio.load(response.data);
@@ -399,7 +348,7 @@ client1.on('interactionCreate', async interaction => {
 					.setFooter({ text: 'Bot para Critterz', iconURL: 'https://i.imgur.com/ZccgsMC.jpeg' });
 
 
-				//client1.channels.cache.get('971975505458909205').send({ embeds: [userReport] });				
+				//clientBlock.channels.cache.get('971975505458909205').send({ embeds: [userReport] });				
 				await interaction.editReply({ embeds: [userReport] })
 			})
 			.catch((error) => {
@@ -410,8 +359,8 @@ client1.on('interactionCreate', async interaction => {
 });
 
 // Login to Discord
-client1.login(process.env.DISCORD_TOKEN_1)
-client2.login(process.env.DISCORD_TOKEN_2)
-client3.login(process.env.DISCORD_TOKEN_3)
-client4.login(process.env.DISCORD_TOKEN_4)
-client5.login(process.env.DISCORD_TOKEN_5)
+clientBlock.login(process.env.DISCORD_TOKEN_1)
+clientWrld.login(process.env.DISCORD_TOKEN_2)
+clientGas.login(process.env.DISCORD_TOKEN_3)
+clientWrldPool.login(process.env.DISCORD_TOKEN_4)
+clientMaticPool.login(process.env.DISCORD_TOKEN_5)
