@@ -1,13 +1,15 @@
 require('dotenv').config() // Load .env file
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const fs = require('node:fs');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 
-const commands = [
-	new SlashCommandBuilder().setName('time').setDescription('Muestra tus últimos tiempos registrados.'),
-	new SlashCommandBuilder().setName('today').setDescription('Muestra los tiempos registrados de hoy.'),
-]
-	.map(command => command.toJSON());
+const commands = [];
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	commands.push(command.data.toJSON());
+}
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN_1);
 
