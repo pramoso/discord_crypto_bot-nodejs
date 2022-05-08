@@ -74,11 +74,11 @@ async function checkLogin(client) {
 
 		if (!login[value]) {
 			login[value] = lastLogin.id;			
-			console.log(`${key} Último login registrado ${d.toLocaleString('es-ES')}.`);
+			console.log(`${key} Último login registrado ${d.toLocaleString('es-MX')}.`);
 		} else if (login[value] != lastLogin.id ) {
 			login[value] = lastLogin.id;
 			console.log(`${key} se ha conectado al juego a las ${d.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${d.toLocaleString()}`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${d.toLocaleString('es-MX')}`);
 		}
 		
 	}
