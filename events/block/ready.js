@@ -74,7 +74,7 @@ async function checkLogin(client) {
 
 		if (!login[value]) {
 			login[value] = lastLogin.id;			
-			console.log(`${key} Último login registrado ${d.toLocaleString()}.`);
+			console.log(`${key} Último login registrado ${d.toLocaleString('es-ES')}.`);
 		} else if (login[value] != lastLogin.id ) {
 			login[value] = lastLogin.id;
 			console.log(`${key} se ha conectado al juego a las ${d.toLocaleString()}.`);
