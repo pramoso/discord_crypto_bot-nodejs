@@ -32,13 +32,13 @@ function getValue(client) {
 			if (secondsElapsed >= 1800 && lastAge != age && paying == 1) {
 				lastAge = age;
 				paying = 0;
-				client.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Último pago hace ${age}. Parece no están pagando.`);
+				client.channels.cache.get(process.env.CS_DISCORD_CHANNEL).send(`<@&${process.env.CS_ROLE}> Último pago hace ${age}. Parece no están pagando.`);
 			}
 
 			// If is less than 60 seconds from last payment, send a message that payments are going out
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
-				client.channels.cache.get('971411187537424394').send(`<@&971415355895468074> Están volviendo a pagar. Último pago hace ${age}`);
+				client.channels.cache.get(process.env.CS_DISCORD_CHANNEL).send(`<@&${process.env.CS_ROLE}> Están volviendo a pagar. Último pago hace ${age}`);
 			}
 
 			console.log('Updated tx of getCryptoshackWorldPool', age)
@@ -57,9 +57,7 @@ module.exports = {
 		console.log(`Ready! Logged in as ${client.user.tag}`);
 
         // Set Discord Bot Name
-        client.guilds.cache
-		.find(guild => guild.id === process.env.SERVER_ID)
-		.me.setNickname('CS Payments')
+        client.user.setUsername('CS Payments')
 
         getValue(client) // Update status once on startup
         // Set the new status message every x seconds

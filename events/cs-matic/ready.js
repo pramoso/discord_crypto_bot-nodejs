@@ -33,9 +33,7 @@ module.exports = {
 		console.log(`Ready! Logged in as ${client.user.tag}`);
 
         // Set Discord Bot Name
-        client.guilds.cache
-		.find(guild => guild.id === process.env.SERVER_ID)
-		.me.setNickname('CS MATIC')
+        client.user.setUsername('CS MATIC')
 
         getValue(client) // Update status once on startup
         // Set the new status message every x seconds

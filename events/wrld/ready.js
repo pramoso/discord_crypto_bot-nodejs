@@ -21,9 +21,7 @@ function getValue(client) {
 			if (symbolWrld != symbol) {
 				symbolWrld = symbol;
 				
-				client.guilds.cache
-				.find(guild => guild.id === process.env.SERVER_ID)
-				.me.setNickname(symbol.toUpperCase())
+				client.user.setUsername(symbol.toUpperCase())
 
 				console.log('Update name of getWorld to', symbol)
 			}			
