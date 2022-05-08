@@ -11,7 +11,7 @@ module.exports = {
 	async execute(interaction) {
 		await interaction.deferReply();
 
-        const userWallet = wallets[interaction.user.tag];
+        const userWallet = wallets[interaction.user.id];
 		const res = await axios.get(`https://server-dxhfx4osrq-ue.a.run.app/block/reward/${userWallet}`);
 		var userBlocks = res.data.playReward || 0;
 

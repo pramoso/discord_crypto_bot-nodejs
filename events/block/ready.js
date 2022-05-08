@@ -1,4 +1,6 @@
 const axios = require('axios');
+const wallets = require('../../discord-wallets.json');
+const login = require('../../database/login');
 
 let symbolBlock = 'BLOCK';
 
@@ -42,6 +44,45 @@ function getValue(client) {
 
 }
 
+async function checkLogin(client) {
+	for (const [key, value] of Object.entries(wallets)) {
+
+		const operationsDoc = `
+			query MyQuery {
+				player_log(
+				where: {account_address: {_eq: "${value}"}}
+				order_by: {login_timestamp: desc}
+				limit: 1
+				) {
+				id
+				login_timestamp
+				logout_timestamp
+				}
+			}
+			`;
+		
+		const body = JSON.stringify({
+			query: operationsDoc,
+			variables: {},
+			operationName: "MyQuery"
+			});
+
+		const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
+		
+		const [lastLogin] = result.data.data.player_log;
+
+		if (!login[value]) {
+			login[value] = lastLogin.id;
+			console.log(`${key} Ultimo login registrado.`);
+		} else if (login[value] != lastLogin.id ) {
+			login[value] = lastLogin.id;
+			console.log(`${key} se ha conectado.`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${lastLogin.login_timestamp}`);
+		}
+		
+	}
+}
+
 module.exports = {
 	name: 'ready',
 	once: true,
@@ -49,7 +90,9 @@ module.exports = {
 		console.log(`Ready! Logged in as ${client.user.tag}`);
 
         getValue(client) // Update status once on startup
+		checkLogin(client);
         // Set the new status message every x seconds
-        setInterval(getValue, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client)
+        setInterval(getValue, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
+        setInterval(checkLogin, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
 	},
 };
