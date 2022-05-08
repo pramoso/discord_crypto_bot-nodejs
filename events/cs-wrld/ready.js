@@ -4,7 +4,6 @@ const { getSecondsDiff, getTimeAgo } = require('../../utils/common');
 
 let lastAge = '';
 let paying = 1;
-let symbolWrld = '';
 
 function getValue(client) {
 	// API for price data.
@@ -14,14 +13,16 @@ function getValue(client) {
 			// Get Wrld Pool Amount
 			let response = await axios.get(`https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&tag=latest&apikey=${process.env.POLYGON_TOKEN}`);
 			let amount = parseFloat(ethers.utils.formatEther(response.data.result)) || 0;
+			
 
-			// Get Timestamp of last tx
+			// Get last tx
 			let lastTx = res.data.result[0];
+			let symbol = lastTx.tokenSymbol || '?';
 			// Calculate age of last tx
 			let age = getTimeAgo(parseInt(lastTx.timeStamp * 1000));
 
 			client.user.setActivity(
-				`${age} | ${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbolWrld}`,
+				`${age} | ${(amount).toLocaleString().replace(/,/g,process.env.THOUSAND_SEPARATOR)} ${symbol}`,
 				{ type: "WATCHING" }
 			)
 
