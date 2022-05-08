@@ -70,14 +70,15 @@ async function checkLogin(client) {
 		const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
 		
 		const [lastLogin] = result.data.data.player_log;
+		let d = new Date(lastLogin.login_timestamp);
 
 		if (!login[value]) {
-			login[value] = lastLogin.id;
-			console.log(`${key} Ultimo login registrado.`);
+			login[value] = lastLogin.id;			
+			console.log(`${key} Último login registrado ${d.toLocaleString()}.`);
 		} else if (login[value] != lastLogin.id ) {
 			login[value] = lastLogin.id;
-			console.log(`${key} se ha conectado.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${lastLogin.login_timestamp}`);
+			console.log(`${key} se ha conectado al juego a las ${d.toLocaleString()}.`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${d.toLocaleString()}`);
 		}
 		
 	}
