@@ -22,7 +22,6 @@ module.exports = {
 				const userInfo = $('script:not([src])')[0].children[0].data
 				const time = JSON.parse(userInfo.match(/timePerEpoch":(\[.*?\])/)[1]);
 				const staked = JSON.parse(userInfo.match(/,"staked":(\[.*?\])/)[1]);
-				var d = new Date();
 
 				const userReport = new MessageEmbed()
 					.setColor('#0099ff')
