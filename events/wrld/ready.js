@@ -9,11 +9,12 @@ function getValue(client) {
 		if(res.data && res.data[0].current_price && res.data[0].price_change_percentage_24h) {
 			let currentPrice = res.data[0].current_price || 0
 			let priceChange = res.data[0].price_change_percentage_24h || 0
-			let symbol = res.data[0].symbol || '?' 
+			let arrow = Math.sign(priceChange) == 1 ? "⬈" : "⬊";
+			let symbol = res.data[0].symbol || '?' 			
 
 			// set currentPrice and priceChange into status
 			client.user.setActivity(
-				`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)} | ${priceChange.toFixed(2)}%`,
+				`${process.env.CURRENCY_SYMBOL}${(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 6 }).replace(/,/g,process.env.THOUSAND_SEPARATOR)} | ${arrow} ${Math.abs(priceChange.toFixed(2))}%`,
 				{ type: "WATCHING" }
 			)
 

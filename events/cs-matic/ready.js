@@ -18,6 +18,10 @@ function getValue(client) {
 				{ type: "WATCHING" }
 			)
 
+			if (amount == 0) {
+				client.channels.cache.get(process.env.CS_DISCORD_CHANNEL).send(`<@&${process.env.CS_ROLE}> Ya no hay ${symbol} disponible. No se está pagando.`);
+			}
+
 			console.log('Updated price to getCryptoshackMaticPool', amount)
 		}
 		else

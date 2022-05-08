@@ -11,10 +11,9 @@ function getValue(client) {
 		// If we got a valid response
 		if(res.data && res.data.result) {
 			// Get Wrld Pool Amount
-			let response = await axios.get(`https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&tag=latest&apikey=${process.env.POLYGON_TOKEN}`);
-			let amount = parseFloat(ethers.utils.formatEther(response.data.result)) || 0;
+			let balanceResult = await axios.get(`https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&tag=latest&apikey=${process.env.POLYGON_TOKEN}`);
+			let amount = parseFloat(ethers.utils.formatEther(balanceResult.data.result)) || 0;
 			
-
 			// Get last tx
 			let lastTx = res.data.result[0];
 			let symbol = lastTx.tokenSymbol || '?';
@@ -40,6 +39,10 @@ function getValue(client) {
 			if (secondsElapsed < 60 && paying == 0) {
 				paying = 1;
 				client.channels.cache.get(process.env.CS_DISCORD_CHANNEL).send(`<@&${process.env.CS_ROLE}> Están volviendo a pagar. Último pago hace ${age}`);
+			}
+
+			if (amount == 0) {
+				client.channels.cache.get(process.env.CS_DISCORD_CHANNEL).send(`<@&${process.env.CS_ROLE}> Ya no hay ${symbol} disponible. No se está pagando.`);
 			}
 
 			console.log('Updated tx of getCryptoshackWorldPool', age)

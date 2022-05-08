@@ -1,19 +1,22 @@
 const axios = require('axios');
 
-let symbolBlock = '';
+let symbolBlock = 'BLOCK';
 
 function getValue(client) {
 	// API for price data.
-	axios.get(`https://aggregator-api.kyberswap.com/ethereum/route?tokenIn=${process.env.BLOCK_ID}&tokenOut=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&amountIn=100000000000000000000&saveGas=0&gasInclude=0`).then(res => {
+	let now = Math.floor(Date.now() / 1000) // timestamp in seconds, not miliseconds
+	let yesterday = now - 86400; // substract 1 day in seconds
+
+	axios.get(`https://www.dextools.io/chain-ethereum/api/Uniswap/1/pairexplorer?v=2.14.0&pair=${process.env.BLOCK_PAIR}&ts=${yesterday}-0`).then(res => {
 		// If we got a valid response
-		if(res.data && res.data.tokens) {
+		if(res.data && res.data.result) {
 			// List of tokens
-			let tokens = res.data.tokens;
+			let tokens = res.data.result;
 			// Get first token from array which should be $block
-			let token = tokens[Object.keys(tokens)[0]]
-			let currentPrice = token.price || 0
+			let token = tokens[Object.keys(tokens)[Object.keys(tokens).length - 1]];
+			let currentPrice = token.price || 0;
 			// let priceChange = res.data[0].price_change_percentage_24h || 0 // Default to zero
-			let symbol = token.symbol || '?' 
+			let symbol = token.symbol || symbolBlock;
 
 			// set currentPrice and priceChange into status
 			client.user.setActivity(
