@@ -2,6 +2,7 @@ const axios = require('axios');
 const wallets = require('../../discord-wallets.json');
 const login = require('../../database/login');
 const logout = require('../../database/logout');
+const listing = require('../../database/listing');
 
 let symbolBlock = 'BLOCK';
 
@@ -98,6 +99,56 @@ async function checkLogin(client) {
 	}
 }
 
+async function checkListing(client) {
+	for (const [key, value] of Object.entries(wallets)) {
+
+		const operationsDoc = `
+			query MyQuery {
+				in_game_item_listing(
+				where: {account_address: {_eq: "${value}"}}
+				order_by: {timestamp: desc}
+				limit: 1
+				) {
+				item_name
+				item_quantity
+				item_quantity_left
+				price
+				id
+				listing_name
+				active
+				timestamp
+				}
+			}
+			`;
+
+		
+		const body = JSON.stringify({
+			query: operationsDoc,
+			variables: {},
+			operationName: "MyQuery"
+			});
+
+		const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
+		
+		if (result.data && result.data.data.in_game_item_listing.length) {
+			const [lastListing] = result.data.data.in_game_item_listing;
+			const d = new Date(lastListing.timestamp);
+			const ts = Math.floor(d.getTime() / 1000);
+
+			if (!listing[value]) {
+				listing[value] = lastListing.id;			
+				console.log(`${key} Último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
+				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
+			} else if (listing[value] != lastListing.id ) {
+				listing[value] = lastListing.id;
+				console.log(`${key} Se ha listado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
+				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha listado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
+			} 
+		}
+		
+	}
+}
+
 module.exports = {
 	name: 'ready',
 	once: true,
@@ -106,8 +157,11 @@ module.exports = {
 
         getValue(client) // Update status once on startup
 		checkLogin(client);
+		checkListing(client);
         // Set the new status message every x seconds
         setInterval(getValue, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
         setInterval(checkLogin, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
+        setInterval(checkLogin, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
+        setInterval(checkListing, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
 	},
 };
