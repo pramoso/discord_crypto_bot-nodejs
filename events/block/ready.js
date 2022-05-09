@@ -91,6 +91,7 @@ async function checkLogin(client) {
 		} else if (logout[value] != lastLogin.id && dateLogoutRange < now) {
 			logout[value] = lastLogin.id;
 			console.log(`${key} se ha desconectado del juego a las ${dateLogout.toLocaleString()}.`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${dateLogout.toLocaleString('es-MX')} :red_circle:`);
 		} 
 	}
 }
