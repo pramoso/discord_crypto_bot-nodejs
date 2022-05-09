@@ -83,7 +83,7 @@ async function checkLogin(client) {
 			login[value] = lastLogin.id;
 			let timestamp = Math.floor(dateLogin.getTime() / 1000);
 			console.log(`${key} se ha conectado al juego a las ${dateLogin.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${dateLogin.toLocaleString('es-MX')} <t:${timestamp}> :green_circle:`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las <t:${timestamp}> :green_circle:`);
 		} 
 		
 		if (!logout[value] && dateLogoutRange < now) {
@@ -93,7 +93,7 @@ async function checkLogin(client) {
 			logout[value] = lastLogin.id;
 			let timestamp = Math.floor(dateLogout.getTime() / 1000);
 			console.log(`${key} se ha desconectado del juego a las ${dateLogout.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha desconectado del juego a las ${dateLogout.toLocaleString('es-MX')} <t:${timestamp}> :red_circle:`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha desconectado del juego a las <t:${timestamp}> :red_circle:`);
 		} 
 	}
 }
