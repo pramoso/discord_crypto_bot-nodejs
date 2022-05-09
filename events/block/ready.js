@@ -81,8 +81,9 @@ async function checkLogin(client) {
 			console.log(`${key} Último login registrado ${dateLogin.toLocaleString('es-MX')}.`);
 		} else if (login[value] != lastLogin.id ) {
 			login[value] = lastLogin.id;
+			let timestamp = Math.floor(dateLogin.getTime() / 1000);
 			console.log(`${key} se ha conectado al juego a las ${dateLogin.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${dateLogin.toLocaleString('es-MX')} :green_circle:`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${dateLogin.toLocaleString('es-MX')} <t:${timestamp}> :green_circle:`);
 		} 
 		
 		if (!logout[value] && dateLogoutRange < now) {
