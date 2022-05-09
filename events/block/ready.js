@@ -69,33 +69,37 @@ async function checkLogin(client) {
 			operationName: "MyQuery"
 			});
 
-		const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
-		
-		const [lastLogin] = result.data.data.player_log;
-		let dateLogin = new Date(lastLogin.login_timestamp);
-		let dateLogout = new Date(lastLogin.logout_timestamp);
-		let dateLogoutRange = new Date(dateLogout.getTime() + 1.5*60000);		
-		let now = new Date();
+		try {
+			const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
 
-		if (!login[value]) {
-			login[value] = lastLogin.id;			
-			console.log(`${key} Último registro el ${dateLogin.toLocaleString('es-MX')}.`);
-		} else if (login[value] != lastLogin.id ) {
-			login[value] = lastLogin.id;
-			let timestamp = Math.floor(dateLogin.getTime() / 1000);
-			console.log(`${key} ha empezado a acumular minutos a las ${dateLogin.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha empezado a acumular minutos a las <t:${timestamp}> :green_circle:`);
-		} 
-		
-		if (!logout[value] && dateLogoutRange < now) {
-			logout[value] = lastLogin.id;
-			console.log(`${key} Último afk el ${dateLogout.toLocaleString('es-MX')}.`);
-		} else if (logout[value] != lastLogin.id && dateLogoutRange < now) {
-			logout[value] = lastLogin.id;
-			let timestamp = Math.floor(dateLogout.getTime() / 1000);
-			console.log(`${key} ha dejado de acumular minutos a las ${dateLogout.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha dejado de acumular minutos a las <t:${timestamp}> :red_circle:`);
-		} 
+			const [lastLogin] = result.data.data.player_log;
+			let dateLogin = new Date(lastLogin.login_timestamp);
+			let dateLogout = new Date(lastLogin.logout_timestamp);
+			let dateLogoutRange = new Date(dateLogout.getTime() + 1.5*60000);		
+			let now = new Date();
+
+			if (!login[value]) {
+				login[value] = lastLogin.id;			
+				console.log(`${key} Último registro el ${dateLogin.toLocaleString('es-MX')}.`);
+			} else if (login[value] != lastLogin.id ) {
+				login[value] = lastLogin.id;
+				let timestamp = Math.floor(dateLogin.getTime() / 1000);
+				console.log(`${key} ha empezado a acumular minutos a las ${dateLogin.toLocaleString()}.`);
+				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha empezado a acumular minutos a las <t:${timestamp}> :green_circle:`);
+			} 
+			
+			if (!logout[value] && dateLogoutRange < now) {
+				logout[value] = lastLogin.id;
+				console.log(`${key} Último afk el ${dateLogout.toLocaleString('es-MX')}.`);
+			} else if (logout[value] != lastLogin.id && dateLogoutRange < now) {
+				logout[value] = lastLogin.id;
+				let timestamp = Math.floor(dateLogout.getTime() / 1000);
+				console.log(`${key} ha dejado de acumular minutos a las ${dateLogout.toLocaleString()}.`);
+				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha dejado de acumular minutos a las <t:${timestamp}> :red_circle:`);
+			} 
+		  } catch (err) {
+			throw new Error('Unable to checkLogin.', err)
+		  }		
 	}
 }
 
@@ -126,26 +130,29 @@ async function checkListing(client) {
 			query: operationsDoc,
 			variables: {},
 			operationName: "MyQuery"
-			});
+			});	
 
-		const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
-		
-		if (result.data && result.data.data.in_game_item_listing.length) {
-			const [lastListing] = result.data.data.in_game_item_listing;
-			const d = new Date(lastListing.timestamp);
-			const ts = Math.floor(d.getTime() / 1000);
+		try {
+			const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
 
-			if (!listing[value]) {
-				listing[value] = lastListing.id;			
-				console.log(`${key} Último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
-				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
-			} else if (listing[value] != lastListing.id ) {
-				listing[value] = lastListing.id;
-				console.log(`${key} Se ha listado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
-				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha listado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
-			} 
-		}
-		
+			if (result.data && result.data.data.in_game_item_listing.length) {
+				const [lastListing] = result.data.data.in_game_item_listing;
+				const d = new Date(lastListing.timestamp);
+				const ts = Math.floor(d.getTime() / 1000);
+	
+				if (!listing[value]) {
+					listing[value] = lastListing.id;			
+					console.log(`${key} Último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
+					// client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
+				} else if (listing[value] != lastListing.id ) {
+					listing[value] = lastListing.id;
+					console.log(`${key} Se ha listado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
+					client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha listado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
+				} 
+			}
+		  } catch (err) {
+			throw new Error('Unable to checkListing.', err)
+		  }		
 	}
 }
 

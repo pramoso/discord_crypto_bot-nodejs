@@ -6,7 +6,7 @@ const wallets = require('../discord-wallets.json');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('report')
-        .setDescription('Reporte consolidado de los últimos días'),
+        .setDescription('Reporte de tiempo consolidado de los últimos días'),
     async execute(interaction) {
         await interaction.deferReply();
         let timeReport = {};
