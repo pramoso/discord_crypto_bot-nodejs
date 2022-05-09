@@ -1,6 +1,7 @@
 const axios = require('axios');
 const wallets = require('../../discord-wallets.json');
 const login = require('../../database/login');
+const logout = require('../../database/logout');
 
 let symbolBlock = 'BLOCK';
 
@@ -70,17 +71,27 @@ async function checkLogin(client) {
 		const result = await axios.post(`https://hasura-dxhfx4osrq-ue.a.run.app/v1/graphql`, body);
 		
 		const [lastLogin] = result.data.data.player_log;
-		let d = new Date(lastLogin.login_timestamp);
+		let dateLogin = new Date(lastLogin.login_timestamp);
+		let dateLogout = new Date(lastLogin.logout_timestamp);
+		let dateLogoutRange = new Date(dateLogout.getTime() + 1*60000);		
+		let now = new Date();
 
 		if (!login[value]) {
 			login[value] = lastLogin.id;			
-			console.log(`${key} Último login registrado ${d.toLocaleString('es-MX')}.`);
+			console.log(`${key} Último login registrado ${dateLogin.toLocaleString('es-MX')}.`);
 		} else if (login[value] != lastLogin.id ) {
 			login[value] = lastLogin.id;
-			console.log(`${key} se ha conectado al juego a las ${d.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${d.toLocaleString('es-MX')}`);
-		}
+			console.log(`${key} se ha conectado al juego a las ${dateLogin.toLocaleString()}.`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las ${dateLogin.toLocaleString('es-MX')}`);
+		} 
 		
+		if (!logout[value] && dateLogoutRange < now) {
+			logout[value] = lastLogin.id;
+			console.log(`${key} Último logout registrado ${dateLogout.toLocaleString('es-MX')}.`);
+		} else if (logout[value] != lastLogin.id && dateLogoutRange < now) {
+			logout[value] = lastLogin.id;
+			console.log(`${key} se ha desconectado del juego a las ${dateLogout.toLocaleString()}.`);
+		} 
 	}
 }
 
@@ -94,6 +105,6 @@ module.exports = {
 		checkLogin(client);
         // Set the new status message every x seconds
         setInterval(getValue, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
-        setInterval(checkLogin, 3000, client);
+        setInterval(checkLogin, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
 	},
 };
