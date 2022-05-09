@@ -79,22 +79,22 @@ async function checkLogin(client) {
 
 		if (!login[value]) {
 			login[value] = lastLogin.id;			
-			console.log(`${key} Último login registrado ${dateLogin.toLocaleString('es-MX')}.`);
+			console.log(`${key} Último registro el ${dateLogin.toLocaleString('es-MX')}.`);
 		} else if (login[value] != lastLogin.id ) {
 			login[value] = lastLogin.id;
 			let timestamp = Math.floor(dateLogin.getTime() / 1000);
-			console.log(`${key} se ha conectado al juego a las ${dateLogin.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha conectado al juego a las <t:${timestamp}> :green_circle:`);
+			console.log(`${key} ha empezado a acumular minutos a las ${dateLogin.toLocaleString()}.`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha empezado a acumular minutos a las <t:${timestamp}> :green_circle:`);
 		} 
 		
 		if (!logout[value] && dateLogoutRange < now) {
 			logout[value] = lastLogin.id;
-			console.log(`${key} Último logout registrado ${dateLogout.toLocaleString('es-MX')}.`);
+			console.log(`${key} Último afk el ${dateLogout.toLocaleString('es-MX')}.`);
 		} else if (logout[value] != lastLogin.id && dateLogoutRange < now) {
 			logout[value] = lastLogin.id;
 			let timestamp = Math.floor(dateLogout.getTime() / 1000);
-			console.log(`${key} se ha desconectado del juego a las ${dateLogout.toLocaleString()}.`);
-			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> se ha desconectado del juego a las <t:${timestamp}> :red_circle:`);
+			console.log(`${key} ha dejado de acumular minutos a las ${dateLogout.toLocaleString()}.`);
+			client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha dejado de acumular minutos a las <t:${timestamp}> :red_circle:`);
 		} 
 	}
 }
