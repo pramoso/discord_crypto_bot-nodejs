@@ -73,7 +73,7 @@ async function checkLogin(client) {
 		const [lastLogin] = result.data.data.player_log;
 		let dateLogin = new Date(lastLogin.login_timestamp);
 		let dateLogout = new Date(lastLogin.logout_timestamp);
-		let dateLogoutRange = new Date(dateLogout.getTime() + 2*60000);		
+		let dateLogoutRange = new Date(dateLogout.getTime() + 1.5*60000);		
 		let now = new Date();
 
 		if (!login[value]) {
