@@ -85,7 +85,7 @@ async function checkLogin(client) {
 				login[value] = lastLogin.id;
 				let timestamp = Math.floor(dateLogin.getTime() / 1000);
 				console.log(`${key} ha empezado a acumular minutos a las ${dateLogin.toLocaleString()}.`);
-				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha empezado a acumular minutos a las <t:${timestamp}> :green_circle:`);
+				client.channels.cache.get(process.env.BLK_LOG_DISCORD_CHANNEL).send(`<@${key}> ha empezado a acumular minutos a las <t:${timestamp}> :green_circle:`);
 			} 
 			
 			if (!logout[value] && dateLogoutRange < now) {
@@ -95,7 +95,7 @@ async function checkLogin(client) {
 				logout[value] = lastLogin.id;
 				let timestamp = Math.floor(dateLogout.getTime() / 1000);
 				console.log(`${key} ha dejado de acumular minutos a las ${dateLogout.toLocaleString()}.`);
-				client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha dejado de acumular minutos a las <t:${timestamp}> :red_circle:`);
+				client.channels.cache.get(process.env.BLK_LOG_DISCORD_CHANNEL).send(`<@${key}> ha dejado de acumular minutos a las <t:${timestamp}> :red_circle:`);
 			} 
 		  } catch (err) {
 			throw new Error('Unable to checkLogin.', err)
@@ -143,11 +143,11 @@ async function checkListing(client) {
 				if (!listing[value]) {
 					listing[value] = lastListing.id;			
 					console.log(`${key} Último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
-					// client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
+					// client.channels.cache.get(process.env.BLK_LOG_DISCORD_CHANNEL).send(`<@${key}> último listado registrado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
 				} else if (listing[value] != lastListing.id ) {
 					listing[value] = lastListing.id;
 					console.log(`${key} Se ha listado ${lastListing.item_quantity}x${lastListing.item_name} el ${d.toLocaleString('es-MX')}`);
-					client.channels.cache.get(process.env.BLK_DISCORD_CHANNEL).send(`<@${key}> ha listado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
+					client.channels.cache.get(process.env.BLK_LOG_DISCORD_CHANNEL).send(`<@${key}> ha listado ${lastListing.item_quantity}x${lastListing.item_name} el <t:${ts}> :shopping_cart:`);
 				} 
 			}
 		  } catch (err) {

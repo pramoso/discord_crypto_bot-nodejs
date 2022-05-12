@@ -19,6 +19,11 @@ function getValue(client) {
 				{ type: "WATCHING" }
 			)
 
+			if (currentPriceGwei <= 30) {
+				console.log(`El precio del gwei es de ${currentPriceGwei}.`);
+				client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.ADMIN_ROLE}> el precio del gwei es de ${currentPriceGwei} :alert:`);
+			}
+
 			console.log('Updated price to getGas', currentPriceGwei);
 		}
 		else
