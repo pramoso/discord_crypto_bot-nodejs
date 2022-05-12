@@ -98,7 +98,8 @@ async function checkLogin(client) {
 				client.channels.cache.get(process.env.BLK_LOG_DISCORD_CHANNEL).send(`<@${key}> ha dejado de acumular minutos a las <t:${timestamp}> :red_circle:`);
 			} 
 		  } catch (err) {
-			throw new Error('Unable to checkLogin.', err)
+			console.log('Error at checkLogin:', err)
+			//throw new Error('Unable to checkLogin.', err)
 		  }		
 	}
 }
@@ -151,7 +152,8 @@ async function checkListing(client) {
 				} 
 			}
 		  } catch (err) {
-			throw new Error('Unable to checkListing.', err)
+			console.log('Error at checkListing:', err)
+			//throw new Error('Unable to checkListing.', err)
 		  }		
 	}
 }
