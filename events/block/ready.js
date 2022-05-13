@@ -238,7 +238,7 @@ module.exports = {
 					list += '\n';
 				}
 				console.log(list);
-				userReport.addField('Cumplieron la meta :green_circle:', list, false);
+				userReport.addField('SI cumplieron la meta :green_circle:', list, false);
 			}
 
 			if (Object.keys(belowTimeSorted).length) {
