@@ -196,9 +196,9 @@ module.exports = {
 					const userTime = JSON.parse(userInfo.match(/timePerEpoch":(\[.*?\])/)[1]);
 
 					if ( userTime[0] >= 480) {
-						aboveGoalTime[key] = userTime[0];
+						aboveGoalTime[key] = userTime[1];
 					} else {
-						belowGoalTime[key] = userTime[0];
+						belowGoalTime[key] = userTime[1];
 					}					
 
 				} catch (err) {
