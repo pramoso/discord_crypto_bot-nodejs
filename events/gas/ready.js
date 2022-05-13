@@ -2,6 +2,10 @@ const axios = require('axios');
 
 let symbolGas = 'gwei';
 
+let lastAlert = 0;
+let under30 = false;
+let seconds = 3600;
+
 function getValue(client) {
 	// API for price data.
 	axios.get(`https://aggregator-api.kyberswap.com/ethereum/route?tokenIn=${process.env.BLOCK_ID}&tokenOut=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&amountIn=100000000000000000000&saveGas=0&gasInclude=0`).then(res => {
@@ -19,9 +23,17 @@ function getValue(client) {
 				{ type: "WATCHING" }
 			)
 
-			if (currentPriceGwei <= 30) {
+			if (lastAlert != 0) {
+				seconds = Math.floor((Date.now() - lastAlert) / 1000);
+			}
+
+			if (currentPriceGwei <= 30 && seconds >= 3600 && !under30) {
+				lastAlert = Date.now();
+				under30 = true;
 				console.log(`El precio del gwei es de ${currentPriceGwei}.`);
-				client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.ADMIN_ROLE}> el precio del gwei es de ${currentPriceGwei} :alert:`);
+				client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.ADMIN_ROLE}> el precio del gwei es de ${currentPriceGwei} :rotating_light:`);
+			} else if (currentPriceGwei > 30) {
+				under30 = false;
 			}
 
 			console.log('Updated price to getGas', currentPriceGwei);
