@@ -3,9 +3,11 @@ const { ethers } = require("ethers");
 
 let symbolMatic = 'MATIC';
 
-function getValue(client) {
-	// API for price data.
-	axios.get(`https://api.polygonscan.com/api?module=account&action=balance&address=${process.env.CRYPTOSHACK_WALLET}&apikey=${process.env.POLYGON_TOKEN}`).then(res => {
+async function getValue(client) {
+	try {
+		// API for price data.
+		let res = await axios.get(`https://api.polygonscan.com/api?module=account&action=balance&address=${process.env.CRYPTOSHACK_WALLET}&apikey=${process.env.POLYGON_TOKEN}`);
+
 		// If we got a valid response
 		if(res.data && res.data.result) {
 			let amount = parseFloat(ethers.utils.formatEther(res.data.result)) || 0; // Default to zero
@@ -26,8 +28,9 @@ function getValue(client) {
 		}
 		else
 			console.log('Could not load data for', symbol)
-
-	}).catch(err => console.log('Error at api data:', err))
+	} catch (err) {
+		console.log('Error at api data:', err)
+	}
 }
 
 module.exports = {

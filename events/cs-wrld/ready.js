@@ -5,9 +5,11 @@ const { getSecondsDiff, getTimeAgo } = require('../../utils/common');
 let lastAge = '';
 let paying = 1;
 
-function getValue(client) {
-	// API for price data.
-	axios.get(`https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&startblock=0&endblock=99999999&page=1&offset=5&sort=desc&apikey=${process.env.POLYGON_TOKEN}`).then(async res => {
+async function getValue(client) {	
+	try {
+		// API for price data.
+		let res = await axios.get(`https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=${process.env.WLRD_ADDRESS}&address=${process.env.CRYPTOSHACK_WALLET}&startblock=0&endblock=99999999&page=1&offset=5&sort=desc&apikey=${process.env.POLYGON_TOKEN}`)
+	
 		// If we got a valid response
 		if(res.data && res.data.result) {
 			// Get Wrld Pool Amount
@@ -51,7 +53,9 @@ function getValue(client) {
 		else
 			console.log('Could not load data for', process.env.BLOCK_ID)
 
-	}).catch(err => console.log('Error at api data:', err))
+	} catch (err) {
+		console.log('Error at api data:', err)
+	}
 }
 
 module.exports = {
