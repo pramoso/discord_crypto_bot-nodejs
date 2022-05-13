@@ -168,9 +168,8 @@ module.exports = {
 		checkLogin(client);
 		checkListing(client);
         // Set the new status message every x seconds
-        setInterval(getValue, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
-        setInterval(checkLogin, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
-        setInterval(checkLogin, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
-        setInterval(checkListing, Math.max(1, process.env.MC_PING_FREQUENCY || 4) * 1000, client);
+        setInterval(getValue, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
+        setInterval(checkLogin, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
+        setInterval(checkListing, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
 	},
 };

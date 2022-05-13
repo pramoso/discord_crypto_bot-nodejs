@@ -68,7 +68,7 @@ module.exports = {
                 list += `${i}. <@${key}> ${value}`;
                 list += '\n';
             }
-            userReport.addField('Marketplace', list, false);
+            userReport.addField('Marketplace (Ventas)', list, false);
         }       
         
         if (ingame) {
@@ -80,7 +80,7 @@ module.exports = {
                 list += '\n';                
             }
 
-            userReport.addField('Ingame', list, false);
+            userReport.addField('Ingame (Gastos de teleport)', list, false);
         }
 
         userReport.setTimestamp()
