@@ -4,6 +4,10 @@ const login = require('../../database/login');
 const logout = require('../../database/logout');
 const listing = require('../../database/listing');
 
+const schedule = require('node-schedule');
+const { MessageEmbed } = require('discord.js');
+const cheerio = require('cheerio');
+
 let symbolBlock = 'BLOCK';
 
 function getValue(client) {
@@ -167,9 +171,94 @@ module.exports = {
         getValue(client) // Update status once on startup
 		checkLogin(client);
 		checkListing(client);
+		
         // Set the new status message every x seconds
         setInterval(getValue, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
         setInterval(checkLogin, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
         setInterval(checkListing, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
+
+		const rule = new schedule.RecurrenceRule();
+		rule.hour = 0;
+		rule.tz = 'Etc/UTC';
+
+		const job = schedule.scheduleJob(rule, async function(){
+			console.log('Un nuevo día ha empezado y estos fueron los tiempos registrados ayer.');
+			var aboveGoalTime = {};
+			var belowGoalTime = {};
+
+			for (const [key, value] of Object.entries(wallets)) {			
+
+				try {
+					let response = await axios.get(`https://www.critterztracker.com/${value}`);
+
+					const $ = cheerio.load(response.data);
+					const userInfo = $('script:not([src])')[0].children[0].data
+					const userTime = JSON.parse(userInfo.match(/timePerEpoch":(\[.*?\])/)[1]);
+
+					if ( userTime[0] >= 480) {
+						aboveGoalTime[key] = userTime[0];
+					} else {
+						belowGoalTime[key] = userTime[0];
+					}					
+
+				} catch (err) {
+					console.error('Error getting critterztracker.com data', err);
+				}	
+				
+			}
+
+			aboveTimes = Object.entries(aboveGoalTime).sort((a,b) => b[1]-a[1]);
+			belowTimes = Object.entries(belowGoalTime).sort((a,b) => b[1]-a[1]);
+
+			let aboveTimeSorted = {}
+			let belowTimeSorted = {}
+			
+			aboveTimes.forEach(function(item){
+				aboveTimeSorted[item[0]] = item[1];
+			});
+
+			belowTimes.forEach(function(item){
+				belowTimeSorted[item[0]] = item[1];
+			});
+
+			var userReport = new MessageEmbed()
+					.setColor('#0099ff')
+					.setTitle('Registro de tiempos consolidado')
+					//.setURL(`https://www.critterztracker.com/${userWallet}`)
+					//.setAuthor({ name: 'proc', iconURL: 'https://i.imgur.com/HqdTrxJ.png', url: 'https://discord.js.org' })
+					.setDescription(`<@&${process.env.ADMIN_ROLE}> un nuevo día ha empezado y estos fueron los tiempos registrados ayer.`)
+					.setThumbnail('https://i.imgur.com/ZccgsMC.jpeg')				
+			
+			if (Object.keys(aboveTimeSorted).length) {
+				let i = 0;
+				let list = ''
+				for (const [key, value] of Object.entries(aboveTimeSorted)) {
+					i += 1;                
+					list += `${i}. <@${key}> ${value}`;
+					list += '\n';
+				}
+				console.log(list);
+				userReport.addField('Cumplieron la meta :green_circle:', list, false);
+			}
+
+			if (Object.keys(belowTimeSorted).length) {
+				let i = 0;
+				let list = ''
+				for (const [key, value] of Object.entries(belowTimeSorted)) {
+					i += 1;                
+					list += `${i}. <@${key}> ${value}`;
+					list += '\n';
+				}
+				console.log(list);
+				userReport.addField('NO cumplieron la meta :red_circle:', list, false);
+			}   
+				
+			userReport.setTimestamp()
+			userReport.setFooter({ text: 'Bot para Critterz', iconURL: 'https://i.imgur.com/ZccgsMC.jpeg' });
+
+			//clientBlock.channels.cache.get('971975505458909205').send({ embeds: [userReport] });			
+			client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send({ embeds: [userReport] })
+		});
+
 	},
 };
