@@ -184,7 +184,7 @@ module.exports = {
 		rule1.tz = 'Etc/UTC';
 
 		const jobNewDayAlert = schedule.scheduleJob(rule1, function() {
-			client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.CRITTERZ_ROLE}> está por reiniciar el dia. No se olviden de SALIRSE del servidor antes del reset. :rotating_light:`);
+			client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.CRITTERZ_ROLE}> en 5 minutos se está por reiniciar el dia. No se olviden de SALIRSE del servidor antes del reset. :rotating_light:`);
 		})
 
 		const rule2 = new schedule.RecurrenceRule();
