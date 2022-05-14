@@ -179,8 +179,8 @@ module.exports = {
 
 		const rule1 = new schedule.RecurrenceRule();
 		
-		rule1.hour = 0;
-		rule1.minute = 13;
+		rule1.hour = 23;
+		rule1.minute = 55;
 		rule1.tz = 'Etc/UTC';
 
 		const jobNewDayAlert = schedule.scheduleJob(rule1, function() {
