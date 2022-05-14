@@ -190,15 +190,15 @@ module.exports = {
 		const rule2 = new schedule.RecurrenceRule();
 
 		rule2.hour = 0;
-		rule2.minute = 1;
+		rule2.minute = 0;
 		rule2.tz = 'Etc/UTC';
-
-		client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.CRITTERZ_ROLE}> se ha reiniciado el dia y deben SALIRSE del servidor! Sino perderán sus minutos acumulados. :rotating_light:`);
 
 		const job = schedule.scheduleJob(rule2, async function(){
 			console.log('Un nuevo día ha empezado y estos fueron los tiempos registrados ayer.');
 			var aboveGoalTime = {};
 			var belowGoalTime = {};
+
+			client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.CRITTERZ_ROLE}> se ha reiniciado el dia y deben SALIRSE del servidor! Sino perderán sus minutos acumulados. :rotating_light:`);
 
 			for (const [key, value] of Object.entries(wallets)) {			
 
