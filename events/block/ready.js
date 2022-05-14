@@ -179,6 +179,7 @@ module.exports = {
 
 		const rule = new schedule.RecurrenceRule();
 		rule.hour = 0;
+		rule.minute = 5;
 		rule.tz = 'Etc/UTC';
 
 		const job = schedule.scheduleJob(rule, async function(){
