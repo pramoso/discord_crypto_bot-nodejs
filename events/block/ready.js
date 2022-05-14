@@ -177,12 +177,23 @@ module.exports = {
         setInterval(checkLogin, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
         setInterval(checkListing, Math.max(1, process.env.UPDATE_SHORT_FREQUENCY || 4) * 1000, client);
 
-		const rule = new schedule.RecurrenceRule();
-		rule.hour = 0;
-		rule.minute = 5;
-		rule.tz = 'Etc/UTC';
+		const rule1 = new schedule.RecurrenceRule();
+		
+		rule1.hour = 0;
+		rule1.minute = 13;
+		rule1.tz = 'Etc/UTC';
 
-		const job = schedule.scheduleJob(rule, async function(){
+		const jobNewDayAlert = schedule.scheduleJob(rule1, function() {
+			client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.CRITTERZ_ROLE}> está por reiniciar el dia. No se olviden de SALIRSE del servidor antes del reset. :rotating_light:`);
+		})
+
+		const rule2 = new schedule.RecurrenceRule();
+
+		rule2.hour = 0;
+		rule2.minute = 5;
+		rule2.tz = 'Etc/UTC';
+
+		const job = schedule.scheduleJob(rule2, async function(){
 			console.log('Un nuevo día ha empezado y estos fueron los tiempos registrados ayer.');
 			var aboveGoalTime = {};
 			var belowGoalTime = {};
