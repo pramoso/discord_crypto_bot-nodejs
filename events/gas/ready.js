@@ -31,7 +31,7 @@ function getValue(client) {
 				lastAlert = Date.now();
 				under30 = true;
 				console.log(`El precio del gwei es de ${currentPriceGwei}.`);
-				client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.ADMIN_ROLE}> el precio del gwei es de ${currentPriceGwei} :rotating_light:`);
+				// client.channels.cache.get(process.env.BLK_GRNL_DISCORD_CHANNEL).send(`<@&${process.env.ADMIN_ROLE}> el precio del gwei es de ${currentPriceGwei} :rotating_light:`);
 			} else if (currentPriceGwei > 30) {
 				under30 = false;
 			}
