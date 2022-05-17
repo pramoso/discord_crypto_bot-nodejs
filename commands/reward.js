@@ -80,7 +80,7 @@ module.exports = {
                 list += '\n';                
             }
 
-            userReport.addField('Ingame (Gastos de teleport)', list, false);
+            userReport.addField('Ingame (Gastos de teleport y otros)', list, false);
         }
 
         userReport.setTimestamp()

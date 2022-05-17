@@ -27,7 +27,7 @@ function getValue(client) {
 				seconds = Math.floor((Date.now() - lastAlert) / 1000);
 			}
 
-			if (currentPriceGwei <= 20 && seconds >= 3600 && !under30) {
+			if (currentPriceGwei <= 15 && seconds >= 3600 && !under30) {
 				lastAlert = Date.now();
 				under30 = true;
 				console.log(`El precio del gwei es de ${currentPriceGwei}.`);
